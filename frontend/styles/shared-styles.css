@@ -1,0 +1,63 @@
+/*
+   CSS styling examples for the Vaadin app.
+   Visit https://vaadin.com/docs/flow/theme/theming-overview.html and
+   https://vaadin.com/themes/lumo for more information.
+*/
+
+/* Example: CSS class name to center align the content . */
+.centered-content {
+    margin: 0 auto;
+    max-width: 250px;
+}
+
+
+.bold-text {
+    font-style: italic;
+}
+
+.pinkback {
+    background-color: rgba(247, 168, 184, 0.1);
+    text-wrap: normal;
+}
+
+.blueback {
+    background-color: rgba(85, 205, 252, 0.1);
+    text-wrap: normal;
+
+}
+
+.redborder {
+    overflow: auto;
+    -ms-overflow-style: none;
+}
+
+.redborder::-webkit-scrollbar {
+    display: none;
+}
+
+.feature-div {
+    align-content: center;
+}
+
+.border {
+    border: solid red 1px;
+}
+
+.feature-h {
+    justify-content: center;
+    display: flex;
+}
+
+#navbarTop {
+    background-color: rgba(247, 168, 184, 0.2);
+}
+
+.v-vertical-layout-scroller-horizontal {
+    display: none;
+}
+
+.super-paragraph {
+    font-style: italic;
+    font-family: "JetBrains Mono", monospace;
+    text-wrap: normal;
+}
