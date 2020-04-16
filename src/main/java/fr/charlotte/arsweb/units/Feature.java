@@ -17,6 +17,9 @@ public class Feature extends Div {
 
     String image;
     String feature;
+    VerticalLayout superContent;
+    HorizontalLayout horizontalLayout;
+    VerticalLayout content;
 
     public Feature(boolean whatIsIt, String title, String feature, String image) {
 
@@ -25,6 +28,12 @@ public class Feature extends Div {
         addClassName("feature-div");
 
         Image loadedImage = null;
+
+        if (image.equalsIgnoreCase("")) {
+            image = "logo.png";
+        }
+
+        VerticalLayout imageLayout = new VerticalLayout();
 
         byte[] loadImage;
         try {
@@ -39,29 +48,36 @@ public class Feature extends Div {
             return;
         }
 
-        VerticalLayout superContent = new VerticalLayout();
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        superContent = new VerticalLayout();
+        horizontalLayout = new HorizontalLayout();
         Paragraph label = new Paragraph(feature);
         H2 h2 = new H2(title);
         h2.setClassName("super-title");
 
-        VerticalLayout content = new VerticalLayout();
+        content = new VerticalLayout();
         content.add(h2, label);
         label.setClassName("super-paragraph");
 
-        content.setSizeUndefined();
+        content.setSizeFull();
+        loadedImage.setSizeUndefined();
 
         horizontalLayout.addClassName("feature-h");
         horizontalLayout.setSizeFull();
 
+        imageLayout.add(loadedImage);
+        loadedImage.setSizeUndefined();
+        imageLayout.setSizeUndefined();
+        imageLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+
         if (whatIsIt) {
             superContent.addClassName("pinkback");
             horizontalLayout.addClassName("pinkback");
-            horizontalLayout.add(content, loadedImage);
+            horizontalLayout.add(content, imageLayout);
         } else {
             superContent.addClassName("blueback");
             horizontalLayout.addClassName("blueback");
-            horizontalLayout.add(loadedImage, content);
+            horizontalLayout.add(imageLayout, content);
         }
 
         setWidthFull();

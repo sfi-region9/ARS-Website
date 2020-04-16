@@ -1,5 +1,11 @@
 package fr.charlotte.arsweb;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Footer;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.server.VaadinSession;
+import fr.charlotte.arsweb.units.ButtonFeature;
 import fr.charlotte.arsweb.units.CookieDialog;
 import fr.charlotte.arsweb.units.Feature;
 import com.google.gson.Gson;
@@ -75,10 +81,20 @@ public class MainView extends AppLayout {
         content.setSizeFull();
         content.setPadding(false);
         content.setSpacing(false);
+
+        Button downloadClient = new Button("Download Android Client!", buttonClickEvent -> {
+            Notification.show("Coming Soon ;)", 10000, Notification.Position.BOTTOM_CENTER);
+        });
+        downloadClient.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+
+
+        Button request = new Button("Request a plugin", buttonClickEvent -> Notification.show("Describe your plugin and send the description to the administrator at : charlotte@sfiars.eu!", 10000, Notification.Position.BOTTOM_CENTER));
+        request.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
         Feature dummyFeature = new Feature(false, "Messenger Management", "You can do almost everything with the messenger bot ! You can do a light management directly into the Messenger Interface without login and linking your accounts", "help.png");
-        Feature loadFeature = new Feature(true, "Easy Subscribing", "You're just a command away from subscribing to our system, the most advanced and automatic way to report to your chain-of-command", "sub.png");
-        Feature thirdFeature = new Feature(false, "Lorem", "Ipsum", "logo.png");
-        Feature fourthFeature = new Feature(true, "Lorem", "Ipsum", "logo.png");
+        Feature loadFeature = new Feature(true, "Easy Subscription", "You're just a command away from subscribing to our system, the most advanced and automatic way to report to your chain-of-command", "sub.png");
+        Feature thirdFeature = new ButtonFeature(false, "Clients", "You can use our web client if you're on a pc, or our Android client on your mobile!", "", downloadClient);
+        Feature fourthFeature = new ButtonFeature(true, "Flexible System", "The system include a system of plugins, you can add your own commands or custom processing of reports with the API, you can request a custom-made plugin too", "",
+                request);
         content.add(dummyFeature, loadFeature, thirdFeature, fourthFeature);
         content.addClassName("redborder");
 
@@ -86,8 +102,13 @@ public class MainView extends AppLayout {
         addToNavbar(icon, tabs);
         setContent(content);
 
-        CookieDialog cookieDialog = new CookieDialog();
-        cookieDialog.setOpened(true);
+        if (VaadinSession.getCurrent().getAttribute("cookie") == null) {
+            CookieDialog cookieDialog = new CookieDialog();
+            cookieDialog.setOpened(true);
+            VaadinSession.getCurrent().setAttribute("cookie", true);
+        }
+
+
     }
 
 
