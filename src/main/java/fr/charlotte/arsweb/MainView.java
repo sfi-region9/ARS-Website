@@ -1,10 +1,16 @@
 package fr.charlotte.arsweb;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Footer;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.component.page.Page;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.server.*;
+import fr.charlotte.arsweb.login.Login;
+import fr.charlotte.arsweb.services.AuthServices;
 import fr.charlotte.arsweb.units.ButtonFeature;
 import fr.charlotte.arsweb.units.CookieDialog;
 import fr.charlotte.arsweb.units.Feature;
@@ -20,11 +26,13 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.server.PWA;
-import com.vaadin.flow.server.StreamResource;
+import fr.charlotte.arsweb.utils.Session;
 
+import javax.servlet.http.Cookie;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * A sample Vaadin view class.
@@ -44,7 +52,6 @@ import java.io.IOException;
 @PWA(name = "Vaadin Application",
         shortName = "Vaadin App",
         description = "This is an example Vaadin application.",
-        enableInstallPrompt = true,
         backgroundColor = "grey",
         offlineResources = "./assets/")
 @CssImport("./styles/shared-styles.css")
@@ -54,28 +61,73 @@ public class MainView extends AppLayout {
     public static final OkHttpClient HTTP_CLIENT = new OkHttpClient();
     public static final Gson GSON = new Gson();
 
+    private static String[] SESSION = new String[]{"username", "scc", "vesselid", "name", "messengerid", "uuid"};
+
+    private AuthServices authServices = AuthServices.getInstance();
+
     public MainView() throws IOException {
         Tab home = new Tab("Home");
         Tab doc = new Tab("Documentation");
         Tab login = new Tab("Login");
         Tab register = new Tab("Register");
         register.setEnabled(false);
-        Tabs tabs = new Tabs(home, doc, login, register);
+        Tabs tabs = new Tabs(home, doc);
+
+        byte[] b = getClass().getResourceAsStream("/assets/logo.png").readAllBytes();
+        Image icon = new Image(new StreamResource("logo.png", () -> new ByteArrayInputStream(b)), "logo");
+        icon.setHeight("44px");
+
+        Session session = Session.getSession(VaadinSession.getCurrent().getBrowser().getAddress());
+
+        if (session.getValue("logged").equals("null")) {
+            tabs.add(login, register);
+            addToNavbar(icon, tabs);
+        } else {
+            Label l = new Label("Welcome " + session.getValue("name"));
+            addToNavbar(icon, tabs, l);
+        }
 
         tabs.addSelectedChangeListener(selectedChangeEvent -> {
-            if (selectedChangeEvent.getSelectedTab().getLabel().equalsIgnoreCase("Logins")) {
+            if (selectedChangeEvent.getSelectedTab().getLabel().equalsIgnoreCase("Login")) {
+
+
                 System.out.println("Login Overlay was triggered by user");
                 LoginOverlay loginOverlay = new LoginOverlay();
                 loginOverlay.setTitle("ARS Login");
                 loginOverlay.setDescription("Login into your ARS Account");
                 loginOverlay.setForgotPasswordButtonVisible(false);
-                loginOverlay.setAction("login");
                 loginOverlay.setOpened(true);
+
+                loginOverlay.addLoginListener(loginEvent -> {
+                    String[] answer = null;
+                    try {
+                        answer = authServices.login(loginEvent);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (answer == null) {
+                        loginOverlay.setError(true);
+                        return;
+                    }
+
+                    boolean isAuthenticated = Boolean.parseBoolean(answer[0]);
+                    String lig = answer[1];
+                    if (isAuthenticated) {
+                        String[] sessionParsing = lig.split("}_}");
+
+                        IntStream.iterate(1, i -> i < sessionParsing.length, i -> i + 1).forEach(i -> session.addKey(SESSION[i], sessionParsing[i]));
+                        session.addKey("logged", true);
+                        loginOverlay.close();
+                        tabs.setSelectedTab(home);
+                        UI.getCurrent().getPage().reload();
+                    } else {
+                        loginOverlay.setError(true);
+                    }
+                });
             }
         });
 
-        byte[] b = getClass().getResourceAsStream("/assets/logo.png").readAllBytes();
-        Image icon = new Image(new StreamResource("logo.png", () -> new ByteArrayInputStream(b)), "logo");
 
         VerticalLayout content = new VerticalLayout();
         content.setSizeFull();
@@ -98,8 +150,7 @@ public class MainView extends AppLayout {
         content.add(dummyFeature, loadFeature, thirdFeature, fourthFeature);
         content.addClassName("redborder");
 
-        icon.setHeight("44px");
-        addToNavbar(icon, tabs);
+
         setContent(content);
 
         if (VaadinSession.getCurrent().getAttribute("cookie") == null) {
