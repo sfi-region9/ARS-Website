@@ -1,37 +1,35 @@
 package fr.charlotte.arsweb;
 
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.page.Page;
-import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.server.*;
-import fr.charlotte.arsweb.login.Login;
-import fr.charlotte.arsweb.services.AuthServices;
-import fr.charlotte.arsweb.units.ButtonFeature;
-import fr.charlotte.arsweb.units.CookieDialog;
-import fr.charlotte.arsweb.units.Feature;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginOverlay;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.server.PWA;
+import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinSession;
+import fr.charlotte.arsweb.services.AuthServices;
+import fr.charlotte.arsweb.services.VesselServices;
+import fr.charlotte.arsweb.units.ButtonFeature;
+import fr.charlotte.arsweb.units.CookieDialog;
+import fr.charlotte.arsweb.units.Feature;
 import fr.charlotte.arsweb.utils.Session;
 
-import javax.servlet.http.Cookie;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -53,6 +51,7 @@ import java.util.stream.IntStream;
         shortName = "Vaadin App",
         description = "This is an example Vaadin application.",
         backgroundColor = "grey",
+        enableInstallPrompt = false,
         offlineResources = "./assets/")
 @CssImport("./styles/shared-styles.css")
 @CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field")
@@ -70,7 +69,6 @@ public class MainView extends AppLayout {
         Tab doc = new Tab("Documentation");
         Tab login = new Tab("Login");
         Tab register = new Tab("Register");
-        register.setEnabled(false);
         Tabs tabs = new Tabs(home, doc);
 
         byte[] b = getClass().getResourceAsStream("/assets/logo.png").readAllBytes();
@@ -83,21 +81,20 @@ public class MainView extends AppLayout {
             tabs.add(login, register);
             addToNavbar(icon, tabs);
         } else {
-            Label l = new Label("Welcome " + session.getValue("name"));
-            addToNavbar(icon, tabs, l);
+            Label welcomeLabel = new Label("Welcome " + session.getValue("name"));
+            Tab tab = new Tab("Log Out");
+            tabs.add(tab);
+            addToNavbar(icon, tabs, welcomeLabel);
         }
 
         tabs.addSelectedChangeListener(selectedChangeEvent -> {
             if (selectedChangeEvent.getSelectedTab().getLabel().equalsIgnoreCase("Login")) {
-
-
                 System.out.println("Login Overlay was triggered by user");
                 LoginOverlay loginOverlay = new LoginOverlay();
                 loginOverlay.setTitle("ARS Login");
                 loginOverlay.setDescription("Login into your ARS Account");
                 loginOverlay.setForgotPasswordButtonVisible(false);
                 loginOverlay.setOpened(true);
-
                 loginOverlay.addLoginListener(loginEvent -> {
                     String[] answer = null;
                     try {
@@ -125,6 +122,10 @@ public class MainView extends AppLayout {
                         loginOverlay.setError(true);
                     }
                 });
+            } else if (selectedChangeEvent.getSelectedTab().getLabel().equalsIgnoreCase("Log Out")) {
+                UI.getCurrent().navigate("logout");
+            } else if (selectedChangeEvent.getSelectedTab().getLabel().equalsIgnoreCase("Register")) {
+                UI.getCurrent().navigate("register");
             }
         });
 

@@ -7,23 +7,26 @@ public class Session {
     private static final HashMap<String, Session> allSesssion = new HashMap<>();
     private final HashMap<String, Object> objectHashMap = new HashMap<>();
 
+    String address;
+
     public static Session getSession(String address) {
         if (allSesssion.containsKey(address)) {
             return allSesssion.get(address);
         }
-        Session s = new Session();
+        Session s = new Session(address);
         allSesssion.put(address, s);
         return s;
     }
 
-    private Session() {
+    private Session(String address) {
+        this.address = address;
     }
 
     public void addKey(String key, Object value, boolean replace) {
         if (objectHashMap.containsKey(key)) {
-            if(replace){
+            if (replace) {
                 objectHashMap.remove(key);
-            }else{
+            } else {
                 return;
             }
         }
@@ -44,4 +47,9 @@ public class Session {
     public String toString() {
         return objectHashMap.toString();
     }
+
+    public void destroy() {
+        Session.allSesssion.remove(this.address);
+    }
+
 }

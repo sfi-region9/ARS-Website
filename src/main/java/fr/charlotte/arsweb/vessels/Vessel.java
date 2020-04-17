@@ -52,6 +52,10 @@ public class Vessel {
     public String getDefaultReport() {
         return defaultReport;
     }
+    @Override
+    public String toString() {
+        return getName();
+    }
 
     public String getReportOfficerMail() {
         return reportOfficerMail;
@@ -64,5 +68,9 @@ public class Vessel {
 
     public String nameToVesselId() {
         return getName().toLowerCase().replace(" ", "");
+    }
+
+    public static <NEWTARGET> Vessel vesselFromID(NEWTARGET newtarget) {
+        return null;
     }
 }

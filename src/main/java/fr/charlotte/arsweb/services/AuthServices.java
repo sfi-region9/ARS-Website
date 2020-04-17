@@ -6,6 +6,7 @@ import com.squareup.okhttp.RequestBody;
 import com.vaadin.flow.component.login.AbstractLogin;
 import fr.charlotte.arsweb.MainView;
 import fr.charlotte.arsweb.login.Login;
+import fr.charlotte.arsweb.register.Register;
 
 import java.io.IOException;
 
@@ -42,9 +43,22 @@ public class AuthServices {
         } else {
             return new String[]{"true", answer};
         }
-
     }
 
+    public String[] register(Register register) throws IOException {
+
+        String jsonRegister = MainView.GSON.toJson(register);
+        Request r = new Request.Builder().post(RequestBody.create(MediaType.parse("application/json"), jsonRegister)).url("https://auth.sfiars.eu/register").build();
+        String answer = MainView.HTTP_CLIENT.newCall(r).execute().body().string();
+        System.out.println(answer);
+
+        if (answer.contains("Error while register")) {
+            return new String[]{"fase", answer.substring(22)};
+        } else {
+            return new String[]{"true", "success"};
+        }
+
+    }
 
     ;
 }

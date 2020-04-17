@@ -58,12 +58,5 @@ public class VesselServices {
         return contact.values().stream().toArray(Vessel[]::new);
     }
 
-    public void save(Vessel vessel) {
-        //We do not have any endpoint to add a vessel, it's completely fake :hehe:
-        contact.put(vessel.getVesselid(), vessel);
-    }
 
-    public void delete(Vessel v) {
-        contact.remove(v.getVesselid());
-    }
 }
