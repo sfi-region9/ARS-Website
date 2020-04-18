@@ -1,7 +1,7 @@
 package fr.charlotte.arsweb.services;
 
 import fr.charlotte.arsweb.MainView;
-import fr.charlotte.arsweb.vessels.Vessel;
+import fr.charlotte.arsweb.sdk.vessels.Vessel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.OkHttpClient;

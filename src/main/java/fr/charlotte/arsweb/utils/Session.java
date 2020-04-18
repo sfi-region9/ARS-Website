@@ -7,6 +7,7 @@ public class Session {
     private static final HashMap<String, Session> allSesssion = new HashMap<>();
     private final HashMap<String, Object> objectHashMap = new HashMap<>();
 
+
     String address;
 
     public static Session getSession(String address) {
@@ -41,6 +42,11 @@ public class Session {
         if (!objectHashMap.containsKey(key))
             return "null";
         return objectHashMap.get(key);
+    }
+
+    public <T> T getValue(String key, Class<T> type) {
+        Object b = getValue(key);
+        return type.cast(b);
     }
 
     @Override

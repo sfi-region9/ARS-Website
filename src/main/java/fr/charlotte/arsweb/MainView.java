@@ -1,6 +1,7 @@
 package fr.charlotte.arsweb;
 
 import com.google.gson.Gson;
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -59,6 +60,7 @@ public class MainView extends AppLayout {
 
     public static final OkHttpClient HTTP_CLIENT = new OkHttpClient();
     public static final Gson GSON = new Gson();
+    public static final MediaType JSON = MediaType.parse("application/json");
 
     private static String[] SESSION = new String[]{"username", "scc", "vesselid", "name", "messengerid", "uuid"};
 
@@ -83,7 +85,8 @@ public class MainView extends AppLayout {
         } else {
             Label welcomeLabel = new Label("Welcome " + session.getValue("name"));
             Tab tab = new Tab("Log Out");
-            tabs.add(tab);
+            Tab user = new Tab("User page");
+            tabs.add(user, tab);
             addToNavbar(icon, tabs, welcomeLabel);
         }
 
@@ -126,6 +129,10 @@ public class MainView extends AppLayout {
                 UI.getCurrent().navigate("logout");
             } else if (selectedChangeEvent.getSelectedTab().getLabel().equalsIgnoreCase("Register")) {
                 UI.getCurrent().navigate("register");
+            }else if(selectedChangeEvent.getSelectedTab().getLabel().equalsIgnoreCase("User page")){
+                if(session.getValue("logged") == null)
+                    return;
+                UI.getCurrent().navigate("user");
             }
         });
 

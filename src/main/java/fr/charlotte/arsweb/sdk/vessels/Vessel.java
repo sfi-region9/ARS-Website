@@ -1,4 +1,4 @@
-package fr.charlotte.arsweb.vessels;
+package fr.charlotte.arsweb.sdk.vessels;
 
 public class Vessel {
 

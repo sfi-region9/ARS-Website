@@ -20,17 +20,13 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinServletService;
-import com.vaadin.flow.server.VaadinSession;
 import fr.charlotte.arsweb.MainView;
 import fr.charlotte.arsweb.register.Register;
 import fr.charlotte.arsweb.services.AuthServices;
 import fr.charlotte.arsweb.services.VesselServices;
-import fr.charlotte.arsweb.vessels.Vessel;
+import fr.charlotte.arsweb.sdk.vessels.Vessel;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.ThreadPoolExecutor;
 
 
 @Route("register")
